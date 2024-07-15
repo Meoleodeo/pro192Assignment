@@ -5,7 +5,10 @@
 package controller;
 
 import View.Menu;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Scanner;
 import model.*;
 
@@ -18,7 +21,7 @@ public class AdminApp extends Menu {
     private Bank bankManagement;
 
     static String title = "Admin App";
-    static String[] listOfChoices = {"View All Customers", "Add Customer", "Remove Customer", "Search Customer", "View Transaction History", "Quit."};
+    static String[] listOfChoices = {"View All Customers", "Add Customer", "Remove Customer", "Search Customer", "View Transaction History", "Change password.", "Quit."};
 
     public AdminApp(Bank bankManagement) {
         super(title, listOfChoices);
@@ -39,11 +42,10 @@ public class AdminApp extends Menu {
             }
             case 3 ->
                 removeCustomer();
-            case 4 ->
-                searchCustomer();
-            case 5 -> {
-                viewTransaction();
-            }
+            case 4 -> searchCustomer();
+            case 5 -> viewTransaction();
+            case 6 -> changePassword();
+            case 0 -> bankManagement.saveCustomer("input.txt");
             default ->
                 System.out.println("invalid choices");
         }
@@ -54,50 +56,42 @@ public class AdminApp extends Menu {
     }
 
     public void addCustomer() throws IllegalArgumentException {
-        Customer cus = new Customer();
         String userName = getUniqueUserName();
         String passWord;
-        while(true){
+        while (true) {
             passWord = Utils.getValue("Enter pass-word (password include 8 digit, at least 1 Upper-case, number and special character): ");
-            if(cus.isValidPassword(passWord)){
+            if (Utils.isValidPassword(passWord)) {
                 break;
             } else {
                 System.out.println("Invalid format. Please Enter again.");
             }
         }
         String name = Utils.getValue("Enter full-name: ");
-        String dobs;
-        while(true){
-            dobs = Utils.normalizeDate(Utils.getValue("Enter date of birth (dd/mm/yyyy): "));
-            if(dobs != null){
-                break;
-            } else {
-                System.out.println("Invalid format. Please enter again.");
-            }
-        }
+        LocalDate dobs = Utils.getLocalDate("Enter date of birth of customer with format(dd/MM/yyyy): ");
 
         String phone;
-        while(true){
+        while (true) {
             phone = Utils.getValue("Enter phone(the phone must be 9 or 10 digit): ");
-            if(cus.isValidPhone(phone)){
+            if (Utils.isValidPhone(phone)) {
                 break;
             } else {
                 System.out.println("Invalid format. Please enter again.");
             }
         }
         String mail;
-        while(true){
+        while (true) {
             mail = Utils.getValue("Enter mail(@gmail.com: ");
-            if(cus.isValidMail(mail)){
+            if (Utils.isValidMail(mail)) {
                 break;
             } else {
                 System.out.println("Invalid format. Please enter again.");
             }
         }
         String id = getUniqueId();
-        String stk = getUniqueNumberAccount();
+        String accountNumber = getUniqueNumberAccount();
+        
 
-        bankManagement.addNewCustomer(new Customer(userName, passWord, name, dobs, phone, mail, id, stk, "0"));
+        bankManagement.addNewCustomer(new Customer(userName, passWord, name, dobs, phone, mail, id, accountNumber, 0.0, new ArrayList<>()));
     }
 
     public String getUniqueUserName() {
@@ -121,7 +115,7 @@ public class AdminApp extends Menu {
         }
         return userName;
     }
-    
+
     public String getUniqueId() {
         String id;
         while (true) {
@@ -129,7 +123,7 @@ public class AdminApp extends Menu {
             boolean isUnique = true;
 
             for (Customer cus : bankManagement.getCustomerList()) {
-                if (cus.getCccd().equals(id)) {
+                if (cus.getGovernmentID().equals(id)) {
                     isUnique = false;
                     break;
                 }
@@ -143,7 +137,7 @@ public class AdminApp extends Menu {
         }
         return id;
     }
-    
+
     public String getUniqueNumberAccount() {
         String numberAccount;
         while (true) {
@@ -151,7 +145,7 @@ public class AdminApp extends Menu {
             boolean isUnique = true;
 
             for (Customer cus : bankManagement.getCustomerList()) {
-                if (cus.getNumberAccount().equals(numberAccount)) {
+                if (cus.getaccountNumber().equals(numberAccount)) {
                     isUnique = false;
                     break;
                 }
@@ -204,18 +198,27 @@ public class AdminApp extends Menu {
     public void viewTransaction() {
         String numberAccount = Utils.getValue("Enter account-number: ");
         Customer check = null;
-        for(Customer cus : bankManagement.getCustomerList()){
-            if(cus.getNumberAccount().equals(numberAccount)){
+        for (Customer cus : bankManagement.getCustomerList()) {
+            if (cus.getaccountNumber().equals(numberAccount)) {
                 check = cus;
                 break;
             }
         }
-        
-        if(check != null){
+        if (check != null) {
+            System.out.printf("%-15s|%-10s|%-15s|%-20s", "DATE", "TYPE", "AMOUNT", "DETAILS");
             System.out.println(check.getTransaction());
         } else {
             System.out.println("Customer not found with the given number account.");
         }
     }
 
+    public void changePassword() {
+        String currentPassword = Utils.getValue("Enter the current password: ");
+        String newPassword = Utils.getValue("Enter the new password: ");
+        if (Utils.isValidPassword(newPassword)) {
+            bankManagement.setBankPassWord(currentPassword, newPassword);
+        } else {
+            System.out.println("Invalid format of valid password.");
+        }
+    }
 }

@@ -1,11 +1,8 @@
 package model;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import controller.Utils;
+
 import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 public class Customer {
@@ -16,69 +13,35 @@ public class Customer {
     private LocalDate dob;
     private String phone;
     private String mail;
-    private String id;
-    private String numberAccount;
+    private String govermentID;
+    private String accountNumber;
     private Double balance;
     private ArrayList<Transaction> transactions;
-    
-    public Customer(){};
 
-    public Customer(String username, String password, String fullName, String dob, String phone, String mail, String cccd, String STK, String soDuTaiKhoan)throws IllegalArgumentException {
+    public Customer() {
+    }
 
+    ;
+
+    public Customer(String username, String password, String fullName, LocalDate dob, String phone, String mail, String id, String accountNumber, Double balance, ArrayList<Transaction> transactions) {
         this.username = username;
         setPassword(password);
         this.fullName = fullName;
-        setDobByString(dob);
+        this.dob = dob;
         setPhone(phone);
         setMail(mail);
-        this.id = cccd;
-        this.numberAccount = STK;
-        setSoduTaiKhoanStr(soDuTaiKhoan);
-        this.transactions = new ArrayList<>();
+        this.govermentID = id;
+        this.accountNumber = accountNumber;
+        this.balance = balance;
+        this.transactions = transactions;
     }
 
-    public final void setDobByString(String dob) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        try {
-            LocalDate dobi = LocalDate.parse(dob, formatter);
-            if (Period.between(dobi, LocalDate.now()).getYears() >= 16) {
-                this.dob = dobi;
-            } else {
-                System.out.println("The old of customer must be greater 16.");
-            }
-        } catch (DateTimeParseException e) {
-            System.out.println("Invalid format. The date of birth of customer need to use the form(dd/MM/yyyy).");
-        }
+    public final void setDobByString(LocalDate dob) {
+        this.dob = dob;
     }
 
-    public boolean isValidPassword(String password) {
-        if (password.length() < 8) {
-            return false;
-        }
-        String upperCasePattern = ".*[A-Z].*";
-        String digitPattern = ".*[0-9].*";
-        String specialCharPattern = ".*[^a-zA-Z0-9].*";
-
-        boolean hasUpperCase = password.matches(upperCasePattern);
-        boolean hasDigit = password.matches(digitPattern);
-        boolean hasSpecialChar = password.matches(specialCharPattern);
-
-        return hasUpperCase && hasDigit && hasSpecialChar;
-    }
-
-    public boolean isValidMail(String email) {
-        String emailPattern = "^[a-zA-Z0-9._%+-]+@gmail\\.com$";
-        return email != null && email.matches(emailPattern);
-    }
-
-    public boolean isValidPhone(String phone) {
-        String regex = "^(\\d{9}|\\d{10})$";
-        return phone != null && phone.matches(regex);
-    }
-
-    public void setPassword(String password) throws IllegalArgumentException{
-        if (isValidPassword(password)) {
-//            this.password = hashPassword(password);
+    public void setPassword(String password) throws IllegalArgumentException {
+        if (Utils.isValidPassword(password)) {
             this.password = password;
         } else {
             throw new IllegalArgumentException("Password must have 8 characters, uppercase letters, numbers and special characters");
@@ -86,15 +49,15 @@ public class Customer {
     }
 
     public void setPhone(String phone) throws IllegalArgumentException {
-        if (isValidPhone(phone)) {
+        if (Utils.isValidPhone(phone)) {
             this.phone = phone;
         } else {
             throw new IllegalArgumentException("Invalid phone number");
         }
     }
 
-    public void setMail(String mail) throws IllegalArgumentException{
-        if (isValidMail(mail)) {
+    public void setMail(String mail) throws IllegalArgumentException {
+        if (Utils.isValidMail(mail)) {
             this.mail = mail;
         } else {
             throw new IllegalArgumentException("Invalid mail");
@@ -109,29 +72,25 @@ public class Customer {
         this.fullName = fullName;
     }
 
-    public void setCccd(String cccd) {
-        this.id = cccd;
+    public void setID(String ID) {
+        this.govermentID = ID;
     }
 
-    public void setSTK(String STK) {
-        this.numberAccount = STK;
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
-    public void setSoDuTaiKhoan(Double soDuTaiKhoan) {
-        this.balance = soDuTaiKhoan;
+    public void balance(Double balance) {
+        this.balance = balance;
     }
-    
-    public void setSoduTaiKhoanStr(String sodutaikhoan) throws IllegalArgumentException{
-        try{
-            double sodu = Double.parseDouble(sodutaikhoan);
-            if(sodu < 0){
-                throw new IllegalArgumentException("Balance must be greater or equal 0.");
-            } else {
-                this.balance = sodu;
-            }
-        } catch(IllegalArgumentException e){
+
+    public void setAccountFund(double balanceStr) throws IllegalArgumentException {
+        if (balanceStr < 0) {
             throw new IllegalArgumentException("Balance must be greater or equal 0.");
+        } else {
+            this.balance = balanceStr;
         }
+
     }
 
     public String getUsername() {
@@ -145,8 +104,8 @@ public class Customer {
     public String getFullName() {
         return fullName;
     }
-    
-    public String getFirstName(){
+
+    public String getFirstName() {
         String[] nameParts = fullName.split(" ");
         return nameParts[nameParts.length - 1];
     }
@@ -163,27 +122,28 @@ public class Customer {
         return mail;
     }
 
-    public String getCccd() {
-        return id;
+    public String getGovernmentID() {
+        return govermentID;
     }
 
-    public String getNumberAccount() {
-        return numberAccount;
+    public String getaccountNumber() {
+        return accountNumber;
     }
 
-    public Double getSoDuTaiKhoan() {
+    public Double getBalance() {
         return balance;
     }
 
-    public ArrayList<Transaction> getTransaction(){
+    public ArrayList<Transaction> getTransaction() {
         return this.transactions;
     }
-    
-    public void addTransaction(Transaction transaction){
+
+    public void addTransaction(Transaction transaction) {
         transactions.add(transaction);
     }
+
     @Override
     public String toString() {
-        return String.format("|%-10s|%-15s|%-11s|%-13s|%-20s|%-11s|\n", username, fullName,numberAccount, id, mail, phone);
-    }      
+        return String.format("|%-17s|%-20s|%-15s|%-15s|%-25s|%-11s|", username, fullName, accountNumber, govermentID, mail, phone);
+    }
 }

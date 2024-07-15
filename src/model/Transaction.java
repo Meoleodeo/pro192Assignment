@@ -9,11 +9,14 @@ package model;
  * @author ASUS
  */
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 public class Transaction {
     private LocalDate date;
     private String type;
     private double amount;
     private String details;
+    
+    public Transaction(){};
 
     public Transaction(LocalDate date, String type, double amount, String details) {
         this.date = date;
@@ -42,7 +45,8 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Transaction{" + "date=" + date + ", type=" + type + ", amount=" + amount + ", details=" + details + '}';
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String formattedDate = date.format(formatter);
+        return String.format("%-15s|%-10s|%-15.2f|%-20s", formattedDate, type, amount, details);
     }
-    
 }

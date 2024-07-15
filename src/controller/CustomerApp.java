@@ -4,11 +4,9 @@
  */
 package controller;
 
-import java.util.ArrayList;
 import model.*;
 import View.Menu;
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  *
@@ -19,12 +17,13 @@ public class CustomerApp extends Menu {
     private Customer customer;
     private Bank bankManagement;
     static String title = "Customer App";
-    static String[] listOfChoices = {"Account Details", "Money Transfer", "Change Email", "Change Phone Number", "Change Password", "Quit"};
+    static String[] listOfChoices = {"Account Details", "Money Transfer", "Change Email", "Change Phone Number", "Change Password", "Withdraw Money", "Deposit.", "Quit"};
 
     public CustomerApp(Customer customer, Bank bankManagement) {
         super(title, listOfChoices);
         this.customer = customer;
         this.bankManagement = bankManagement;
+        congratulateCustomersWithBirthdayToday();
     }
 
     @Override
@@ -33,7 +32,7 @@ public class CustomerApp extends Menu {
             case 1 -> {
                 displayAccountDetails();
             }
-            case 2 ->  {
+            case 2 -> {
                 transferMoney();
             }
             case 3 -> {
@@ -48,6 +47,12 @@ public class CustomerApp extends Menu {
             case 6 -> {
                 withdrawMoney();
             }
+            case 7 -> {
+                depositMoney();
+            }
+            case 0 -> {
+                bankManagement.saveCustomer("bank.txt");
+            }
             default -> {
                 System.out.println("Invalid choose");
             }
@@ -56,11 +61,11 @@ public class CustomerApp extends Menu {
 
     private void displayAccountDetails() {
         System.out.println(String.format(
-                "%-13s|%-15s|%-11s|%-12s",
+                "%-20s|%-20s|%-15s|%-20s",
                 "CustomerID", "Name", "Account Number", "Account Balance"
         ));
-        System.out.printf("%-13s|%-15s|%-11s|%-12.2f", customer.getCccd(), customer.getFullName(), customer.getNumberAccount(),
-                customer.getSoDuTaiKhoan());
+        System.out.printf("%-20s|%-20s|%-15s|%-20.2f", customer.getGovernmentID(), customer.getFullName(), customer.getaccountNumber(),
+                customer.getBalance());
     }
 
     private void transferMoney() {
@@ -68,7 +73,7 @@ public class CustomerApp extends Menu {
         String recipientAccountNumber = Utils.getValue("Enter recipient's account number: ");
 
         for (Customer cus : bankManagement.getCustomerList()) {
-            if (cus.getNumberAccount().equals(recipientAccountNumber)) {
+            if (cus.getaccountNumber().equals(recipientAccountNumber)) {
                 recipient = cus;
                 break;
             }
@@ -82,14 +87,14 @@ public class CustomerApp extends Menu {
                     return;
                 }
 
-                if (customer.getSoDuTaiKhoan() >= amount) {
-                    customer.setSoDuTaiKhoan(customer.getSoDuTaiKhoan() - amount);
-                    recipient.setSoDuTaiKhoan(recipient.getSoDuTaiKhoan() + amount);
+                if (customer.getBalance() >= amount) {
+                    customer.balance(customer.getBalance() - amount);
+                    recipient.balance(recipient.getBalance() + amount);
 
                     //add transactions to both sender and recipient
                     LocalDate currentDate = LocalDate.now();
                     Transaction senderTransaction = new Transaction(currentDate, "transfer", amount, "Transfer to " + recipientAccountNumber);
-                    Transaction recipientTransaction = new Transaction(currentDate, "transfer", amount, "Received from " + customer.getNumberAccount());
+                    Transaction recipientTransaction = new Transaction(currentDate, "transfer", amount, "Received from " + customer.getaccountNumber());
                     customer.addTransaction(senderTransaction);
                     recipient.addTransaction(recipientTransaction);
                     System.out.println("Transfer successful.");
@@ -113,9 +118,9 @@ public class CustomerApp extends Menu {
             }
 
             // Check if the customer has sufficient funds
-            if (customer.getSoDuTaiKhoan() >= amount) {
+            if (customer.getBalance() >= amount) {
                 // Withdraw money
-                customer.setSoDuTaiKhoan(customer.getSoDuTaiKhoan() - amount);
+                customer.balance(customer.getBalance() - amount);
 
                 // Add transaction
                 Transaction withdrawTransaction = new Transaction(LocalDate.now(), "withdrawal", amount, "Withdrawal");
@@ -129,8 +134,25 @@ public class CustomerApp extends Menu {
             System.out.println("Invalid amount entered. Please enter a numeric value.");
         }
     }
-    
-    
+
+    private void depositMoney() {
+        try {
+            double amount = Double.parseDouble(Utils.getValue("Enter amount to deposit: "));
+            if (amount <= 0) {
+                System.out.println("Amount must be greater than zero.");
+                return;
+            }
+            
+            customer.setAccountFund(customer.getBalance() + amount);
+
+            Transaction depositTransaction = new Transaction(LocalDate.now(), "deposit", amount, "Deposit");
+            customer.addTransaction(depositTransaction);
+
+            System.out.println("Deposit successfully.");
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid amount entered. Please enter a numeric value.");
+        }
+    }
 
     private void changeEmail() {
         String newEmail = Utils.getValue("Enter new email: ");
@@ -156,4 +178,11 @@ public class CustomerApp extends Menu {
         }
     }
 
+    public void congratulateCustomersWithBirthdayToday() {
+        LocalDate today = LocalDate.now();
+        LocalDate dob = customer.getDob();
+        if (dob.getDayOfMonth() == today.getDayOfMonth() && dob.getMonth() == today.getMonth()) {
+            System.out.println("Happy Birthday " + customer.getFullName() + "!");
+        }
+    }
 }

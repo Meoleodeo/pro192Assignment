@@ -8,14 +8,12 @@ package controller;
  *
  * @author ASUS
  */
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Date;
-import java.util.Locale;
+import java.util.ArrayList;
 import java.util.Scanner;
+import model.Customer;
 
 /**
  *
@@ -28,28 +26,13 @@ public class Utils {
         return scanner.nextLine();
     }
 
-    public static int getValueNonNegativeInt(String message) {
+    public static int getValueInt(String message, int min, int max) {
         while (true) {
             String input = getValue(message).trim();
             try {
                 int value = Integer.parseInt(input);
-                if (value >= 0) {
+                if(min <= value && value <= max)
                     return value;
-                } else {
-                    System.out.println("Invalid input. Please enter a non-negative number.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a valid integer.");
-            }
-        }
-    }
-
-    public static int getValueInt(String message) {
-        while (true) {
-            String input = getValue(message).trim();
-            try {
-                int value = Integer.parseInt(input);
-                return value;
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a valid integer.");
             }
@@ -57,35 +40,18 @@ public class Utils {
     }
 
 
-    public static double getValueDouble(String message) {
+    public static double getValueDouble(String message, double min, double max) {
         while (true) {
             String input = getValue(message).trim();
             try {
                 double value = Double.parseDouble(input);
-                return value;
+                if(min <= value && value <= max)
+                    return value;
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a real number.");
             }
         }
     }
-
-    public static double getValueNonNegativeDouble(String message) {
-        while (true) {
-            String input = getValue(message).trim();
-            try {
-                double value = Double.parseDouble(input);
-                if(value >= 0){
-                    return value;
-                } else {
-                    System.out.println("Invalid input. Please enter a positive number.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a real-number.");
-            }
-        }
-    }
-
-
 
     public static LocalDate getLocalDate(String message) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -103,8 +69,6 @@ public class Utils {
     }
 
 
-
-
     public static String normalizeName(String name) {
         name = name.replaceAll("[^a-zA-Z ]", "");
         name = name.replaceAll("\\s+", " ");
@@ -119,53 +83,53 @@ public class Utils {
         return normalized.toString().trim();
     }
 
-    public static boolean getBooleanGender() {
-        while (true) {
-            String genderStr = Utils.getValue("Enter gender (true = Male, false = Female): ");
-            if (genderStr.equalsIgnoreCase("true") || genderStr.equalsIgnoreCase("male")) {
-                return true;
-            } else if (genderStr.equalsIgnoreCase("false") || genderStr.equalsIgnoreCase("female")) {
-                return false;
-            } else {
-                System.out.println("Invalid input. Please enter 'true' for Male or 'false' for Female.");
-            }
+    
+    public static boolean isValidPassword(String password) {
+        if (password.length() < 8) {
+            return false;
         }
+        String upperCasePattern = ".*[A-Z].*";
+        String digitPattern = ".*[0-9].*";
+        String specialCharPattern = ".*[^a-zA-Z0-9].*";
+
+        boolean hasUpperCase = password.matches(upperCasePattern);
+        boolean hasDigit = password.matches(digitPattern);
+        boolean hasSpecialChar = password.matches(specialCharPattern);
+
+        return hasUpperCase && hasDigit && hasSpecialChar;
+    }
+
+    public static boolean isValidMail(String email) {
+        String emailPattern = "^[a-zA-Z0-9._%+-]+@gmail\\.com$";
+        return email != null && email.matches(emailPattern);
+    }
+
+    public static boolean isValidPhone(String phone) {
+        String regex = "^(\\d{9}|\\d{10})$";
+        return phone != null && phone.matches(regex);
     }
     
-    public static boolean isValidDate(String date) {
-        if (date == null) {
-            return false;
-        }
-        String[] parts = date.split("/");
-        int d = Integer.parseInt(parts[0]);
-        int m = Integer.parseInt(parts[1]);
-        int y = Integer.parseInt(parts[2]);
-        int maxd = 31;
-        if (d < 1 || d > 31 || m < 1 || m > 12) {
-            return false;
-        }
-        if (m == 4 || m == 6 || m == 9 || m == 11) {
-            maxd = 30;
-        } else if (m == 2) {
-            if (y % 100 == 0 || (y % 4 == 0 && y % 100 != 0)) {
-                maxd = 29;
-            } else {
-                maxd = 28;
+    public static boolean checkDuplicate(String id, ArrayList<Customer> list){
+        boolean checkDuplicate = false;
+        for(Customer cus : list){
+            if(cus.getUsername().equals(id)){
+                checkDuplicate = true;
+                break;
             }
         }
-        return d <= maxd;
+        return checkDuplicate;
     }
-
-    public static String normalizeDate(String dateString) {
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
-        try {
-            LocalDate date = LocalDate.parse(dateString, inputFormatter);
-            return date.format(outputFormatter);
-        } catch (DateTimeParseException e) {
+    
+    public static LocalDate isValidDate(String date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate dateFormat;
+        try{
+            dateFormat = LocalDate.parse(date, formatter);
+            return dateFormat;
+        } catch (DateTimeParseException e){
+            System.out.println("Invalid format. Please use correct format(dd/MM/yyyy).");
+            return null;
         }
-        return null;
     }
 }
 

@@ -3,7 +3,8 @@ package View;
 /**
  *
  * @author ASUS
- */import controller.Utils;
+ */
+import controller.Utils;
 import java.util.ArrayList;
 import java.util.List;
 /**
@@ -51,7 +52,7 @@ public abstract class Menu {
 
     public int getSelected(){
         displayMenu();
-        return Utils.getValueNonNegativeInt("Enter your choice: ");
+        return Utils.getValueInt("Enter your choice: ", 0, Integer.MAX_VALUE);
     }
     public abstract void execute(int n);
 

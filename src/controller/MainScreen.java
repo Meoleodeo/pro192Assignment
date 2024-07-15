@@ -64,6 +64,10 @@ public class MainScreen extends Menu {
                         }
                     }
                     case 2 -> {
+                        if(bankManagement.getCustomerList().isEmpty()){
+                            System.out.println("There is no customer in list.");
+                            break;
+                        }
                         String userNameCustomer = Utils.getValue("Enter customer username: ");
                         String passWordCustomer = Utils.getValue("Enter customer password: ");
 
@@ -76,7 +80,7 @@ public class MainScreen extends Menu {
                         }
                     }
                     default ->
-                        System.out.println("Invalid choice.");
+                        System.out.println("Invalid choice. Please enter again.");
                 }
             }
         };

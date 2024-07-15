@@ -1,4 +1,4 @@
-# Quản lí ngn hàng
+# Quản lí ngân hàng
 > [Description](#description) | [Install](#install) | [Main Features include](#main-features-include) | [Author](#member)
 ## Description:
 - app quản lí ngân hàng cho Assignment môn PRO192 của nhóm [n9](#member)
@@ -13,7 +13,7 @@ echo thanks
 - View All Customers
 - Add Customer
 - Remove Customer
-- Search Customer
+- Search Customeraa
 - View Transaction History
 ### Customer App:
 - Check Balance
@@ -25,4 +25,4 @@ echo thanks
 ## Member:
 + Hồ Huy Hoàng 
 + Hồ Ngọc Thiện
-+ 
++ ...
