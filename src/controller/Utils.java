@@ -20,6 +20,7 @@ import model.Customer;
  * @author ASUS
  */
 public class Utils {
+
     public static String getValue(String message) {
         System.out.print(message);
         Scanner scanner = new Scanner(System.in);
@@ -31,22 +32,23 @@ public class Utils {
             String input = getValue(message).trim();
             try {
                 int value = Integer.parseInt(input);
-                if(min <= value && value <= max)
+                if (min <= value && value <= max) {
                     return value;
+                }
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a valid integer.");
             }
         }
     }
 
-
     public static double getValueDouble(String message, double min, double max) {
         while (true) {
             String input = getValue(message).trim();
             try {
                 double value = Double.parseDouble(input);
-                if(min <= value && value <= max)
+                if (min <= value && value <= max) {
                     return value;
+                }
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a real number.");
             }
@@ -68,7 +70,6 @@ public class Utils {
         return localDate;
     }
 
-
     public static String normalizeName(String name) {
         name = name.replaceAll("[^a-zA-Z ]", "");
         name = name.replaceAll("\\s+", " ");
@@ -83,7 +84,6 @@ public class Utils {
         return normalized.toString().trim();
     }
 
-    
     public static boolean isValidPassword(String password) {
         if (password.length() < 8) {
             return false;
@@ -108,30 +108,36 @@ public class Utils {
         String regex = "^(\\d{9}|\\d{10})$";
         return phone != null && phone.matches(regex);
     }
-    
-    public static boolean checkDuplicate(String id, ArrayList<Customer> list){
+
+    public static boolean checkDuplicate(String id, ArrayList<Customer> list) {
         boolean checkDuplicate = false;
-        for(Customer cus : list){
-            if(cus.getUsername().equals(id)){
+        for (Customer cus : list) {
+            if (cus.getGovernmentID().equals(id)) {
                 checkDuplicate = true;
                 break;
             }
         }
         return checkDuplicate;
     }
-    
-    public static LocalDate isValidDate(String date){
+
+    public static LocalDate isValidDate(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDate dateFormat;
-        try{
+        try {
             dateFormat = LocalDate.parse(date, formatter);
             return dateFormat;
-        } catch (DateTimeParseException e){
+        } catch (DateTimeParseException e) {
             System.out.println("Invalid format. Please use correct format(dd/MM/yyyy).");
             return null;
         }
     }
+
+    public static String center(String text, int width) {
+        if (text.length() >= width) {
+            return text;
+        }
+        int leftPadding = (width - text.length()) / 2;
+        int rightPadding = width - text.length() - leftPadding;
+        return " ".repeat(leftPadding) + text + " ".repeat(rightPadding);
+    }
 }
-
-
-

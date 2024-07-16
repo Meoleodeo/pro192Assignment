@@ -17,13 +17,9 @@ public class Customer {
     private String accountNumber;
     private Double balance;
     private ArrayList<Transaction> transactions;
-
-    public Customer() {
-    }
-
     ;
 
-    public Customer(String username, String password, String fullName, LocalDate dob, String phone, String mail, String id, String accountNumber, Double balance, ArrayList<Transaction> transactions) {
+        public Customer(String username, String password, String fullName, LocalDate dob, String phone, String mail, String id, String accountNumber, Double balance, ArrayList<Transaction> transactions) {
         this.username = username;
         setPassword(password);
         this.fullName = fullName;
@@ -44,7 +40,7 @@ public class Customer {
         if (Utils.isValidPassword(password)) {
             this.password = password;
         } else {
-            throw new IllegalArgumentException("Password must have 8 characters, uppercase letters, numbers and special characters");
+            throw new IllegalArgumentException("Password must be at least 8 characters and contain uppercase letters, numbers and special characters");
         }
     }
 
@@ -84,11 +80,11 @@ public class Customer {
         this.balance = balance;
     }
 
-    public void setAccountFund(double balanceStr) throws IllegalArgumentException {
-        if (balanceStr < 0) {
+    public void setAccountFund(double balance) throws IllegalArgumentException {
+        if (balance < 0) {
             throw new IllegalArgumentException("Balance must be greater or equal 0.");
         } else {
-            this.balance = balanceStr;
+            this.balance = balance;
         }
 
     }
@@ -144,6 +140,6 @@ public class Customer {
 
     @Override
     public String toString() {
-        return String.format("|%-17s|%-20s|%-15s|%-15s|%-25s|%-11s|", username, fullName, accountNumber, govermentID, mail, phone);
-    }
+        return String.format("|%-17s|%-20s|%-20s|%-20s|%-25s|%-15s|", Utils.center(username, 17), Utils.center(fullName, 20), Utils.center(accountNumber, 20), Utils.center(govermentID, 20), Utils.center(mail, 25), Utils.center(phone, 15));
+    }   
 }

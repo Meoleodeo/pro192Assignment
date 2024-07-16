@@ -6,6 +6,8 @@ package controller;
 
 import model.*;
 import View.Menu;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 
 /**
@@ -17,7 +19,7 @@ public class CustomerApp extends Menu {
     private Customer customer;
     private Bank bankManagement;
     static String title = "Customer App";
-    static String[] listOfChoices = {"Account Details", "Money Transfer", "Change Email", "Change Phone Number", "Change Password", "Withdraw Money", "Deposit.", "Quit"};
+    static String[] listOfChoices = {"Account Details", "Money Transfer", "Deposit.","Withdraw Money","Change Email", "Change Phone Number", "Change Password", "Quit"};
 
     public CustomerApp(Customer customer, Bank bankManagement) {
         super(title, listOfChoices);
@@ -36,22 +38,23 @@ public class CustomerApp extends Menu {
                 transferMoney();
             }
             case 3 -> {
-                changeEmail();
+                depositMoney();
             }
             case 4 -> {
-                changePhoneNumber();
-            }
-            case 5 -> {
-                changePassword();
-            }
-            case 6 -> {
                 withdrawMoney();
             }
+            case 5 -> {
+                changeEmail();
+            }
+            case 6 -> {
+                changePhoneNumber();
+            }
             case 7 -> {
-                depositMoney();
+                changePassword();
             }
             case 0 -> {
                 bankManagement.saveCustomer("bank.txt");
+                bankManagement.saveTransaction("transaction.txt");
             }
             default -> {
                 System.out.println("Invalid choose");
@@ -60,12 +63,17 @@ public class CustomerApp extends Menu {
     }
 
     private void displayAccountDetails() {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator(',');
+        DecimalFormat decimal = new DecimalFormat("0.00", symbols);
         System.out.println(String.format(
-                "%-20s|%-20s|%-15s|%-20s",
-                "CustomerID", "Name", "Account Number", "Account Balance"
-        ));
-        System.out.printf("%-20s|%-20s|%-15s|%-20.2f", customer.getGovernmentID(), customer.getFullName(), customer.getaccountNumber(),
-                customer.getBalance());
+                "|%-20s|%-20s|%-15s|%-20s|",
+                Utils.center("CustomerID", 20), Utils.center("Name", 20), 
+                Utils.center("Account Number", 15), 
+                Utils.center("Account Balance", 20)));
+        System.out.println("|--------------------|--------------------|---------------|--------------------|");
+        System.out.printf("|%-20s|%-20s|%-15s|%-20s|", Utils.center(customer.getGovernmentID(), 20), Utils.center(customer.getFullName(), 20), Utils.center(customer.getaccountNumber(), 15),
+                Utils.center(decimal.format(customer.getBalance()), 20));
     }
 
     private void transferMoney() {
@@ -142,7 +150,7 @@ public class CustomerApp extends Menu {
                 System.out.println("Amount must be greater than zero.");
                 return;
             }
-            
+
             customer.setAccountFund(customer.getBalance() + amount);
 
             Transaction depositTransaction = new Transaction(LocalDate.now(), "deposit", amount, "Deposit");

@@ -21,7 +21,7 @@ public class AdminApp extends Menu {
     private Bank bankManagement;
 
     static String title = "Admin App";
-    static String[] listOfChoices = {"View All Customers", "Add Customer", "Remove Customer", "Search Customer", "View Transaction History", "Change password.", "Quit."};
+    static String[] listOfChoices = {"View All Customers.", "Add Customer.", "Remove Customer.", "Search Customer.", "View Transaction History.", "Change password.", "Quit."};
 
     public AdminApp(Bank bankManagement) {
         super(title, listOfChoices);
@@ -40,12 +40,14 @@ public class AdminApp extends Menu {
                     System.out.println(e.getMessage());
                 }
             }
-            case 3 ->
-                removeCustomer();
+            case 3 -> removeCustomer();
             case 4 -> searchCustomer();
             case 5 -> viewTransaction();
             case 6 -> changePassword();
-            case 0 -> bankManagement.saveCustomer("input.txt");
+            case 0 -> {
+                bankManagement.saveCustomer("bank.txt");
+                bankManagement.saveTransaction("transaction.txt");
+            }
             default ->
                 System.out.println("invalid choices");
         }
@@ -170,18 +172,19 @@ public class AdminApp extends Menu {
         Menu searchMenu = new Menu("Search Menu", searchMenuchoice) {
             @Override
             public void execute(int choice) {
+                ArrayList<Customer> result = null;
                 switch (choice) {
                     case 1:
                         String userName = Utils.getValue("Enter user-name: ");
-                        bankManagement.displayCustomeList(bankManagement.searchCustomerByUserName(userName));
+                        result = bankManagement.searchMethod(cus -> cus.getUsername().equals(userName));
                         break;
                     case 2:
                         String name = Utils.getValue("Enter name: ");
-                        bankManagement.displayCustomeList(bankManagement.searchCustomerByName(name));
+                        result = bankManagement.searchMethod(cus -> cus.getFirstName().equalsIgnoreCase(name));
                         break;
                     case 3:
                         String id = Utils.getValue("Enter id: ");
-                        bankManagement.displayCustomeList(bankManagement.searchCustomerByCCCD(id));
+                        result = bankManagement.searchMethod(cus -> cus.getGovernmentID().equals(id));
                         break;
                     case 0:
                         System.out.println("Exiting...");
@@ -189,6 +192,11 @@ public class AdminApp extends Menu {
                     default:
                         System.out.println("Invalid choice. Please enter option correctly.");
                         break;
+                }
+                if(result != null){
+                    bankManagement.displayCustomeList(result);
+                } else {
+                    System.out.println("Customer not found with the given information.");
                 }
             }
         };
@@ -205,8 +213,11 @@ public class AdminApp extends Menu {
             }
         }
         if (check != null) {
-            System.out.printf("%-15s|%-10s|%-15s|%-20s", "DATE", "TYPE", "AMOUNT", "DETAILS");
-            System.out.println(check.getTransaction());
+            System.out.printf("|%-15s|%-10s|%-15s|%-30s|\n", Utils.center("DATE", 15), Utils.center("TYPE", 10), Utils.center("AMOUNT", 15), Utils.center("DETAILS", 30));
+            System.out.println("|---------------|----------|---------------|------------------------------|");
+            for(Transaction trans : check.getTransaction()){
+                System.out.println(trans);
+            }
         } else {
             System.out.println("Customer not found with the given number account.");
         }

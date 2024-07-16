@@ -46,7 +46,7 @@ public abstract class Menu {
         for(int i = 0; i < choices.size() - 1; i++){
             System.out.println((i + 1) + "." + choices.get(i));
         }
-        System.out.println(0 + "." + choices.getLast());
+        System.out.println(0+ "." + choices.get(choices.size() - 1));
         System.out.println("__________________________");
     }
 

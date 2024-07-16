@@ -71,13 +71,17 @@ public class MainScreen extends Menu {
                         String userNameCustomer = Utils.getValue("Enter customer username: ");
                         String passWordCustomer = Utils.getValue("Enter customer password: ");
 
-                        Customer customer = bankManagement.getCustomerByUserName(userNameCustomer);
+                        Customer customer = bankManagement.getCustomerMethod(cus -> cus.getUsername().equals(userNameCustomer));
                         if (customer != null && customer.getPassword().equals(passWordCustomer)) {
                             CustomerApp customerApp = new CustomerApp(customer, bankManagement);
                             customerApp.run();
                         } else {
                             System.out.println("Invalid customer username or password.");
                         }
+                    }
+                    case 0 -> {
+                        System.out.println("Exiting....");
+                        break;
                     }
                     default ->
                         System.out.println("Invalid choice. Please enter again.");

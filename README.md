@@ -1,5 +1,5 @@
 # Quản lí ngân hàng
-> [Description](#description) | [Install](#install) | [Main Features include](#main-features-include) | [Author](#member)
+> [Description](#description) | [Install](#install) | [Main Features include](#main-features-include)
 ## Description:
 - app quản lí ngân hàng cho Assignment môn PRO192 của nhóm [n9](#member)
 ## Install:
@@ -10,19 +10,18 @@ echo thanks
 ```
 ## Main Features Include:
 ### Admin App:
-- View All Customers
-- Add Customer
-- Remove Customer
-- Search Customeraa
-- View Transaction History
-### Customer App:
-- Check Balance
-- Transfer Money
-- Change Email
-- Change Phone Number
-- Change Password
+1. View All Customers.
+2. Add Customer.
+3. Remove Customer.
+4. Search Customer.
+5. View Transaction History.
+6. Change password.
 
-## Member:
-+ Hồ Huy Hoàng 
-+ Hồ Ngọc Thiện
-+ ...
+### Customer App:
+1. Account Details
+2. Money Transfer
+3. Deposit.
+4. Withdraw Money
+5. Change Email
+6. Change Phone Number
+7. Change Password

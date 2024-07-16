@@ -8,16 +8,18 @@ package model;
  *
  * @author ASUS
  */
+import controller.Utils;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-public class Transaction {
-    private LocalDate date;
-    private String type;
-    private double amount;
-    private String details;
-    
-    public Transaction(){};
 
+public class Transaction {
+    private final LocalDate date;
+    private final String type;
+    private final double amount;
+    private final String details;
+    
     public Transaction(LocalDate date, String type, double amount, String details) {
         this.date = date;
         this.type = type;
@@ -45,8 +47,11 @@ public class Transaction {
 
     @Override
     public String toString() {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setDecimalSeparator('.');
+        DecimalFormat decimal = new DecimalFormat("0.00", symbols);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         String formattedDate = date.format(formatter);
-        return String.format("%-15s|%-10s|%-15.2f|%-20s", formattedDate, type, amount, details);
+        return String.format("|%-15s|%-10s|%-15s|%-30s|", Utils.center(formattedDate, 15), Utils.center(type, 10), Utils.center(decimal.format(amount), 15), Utils.center(details, 30));
     }
 }
